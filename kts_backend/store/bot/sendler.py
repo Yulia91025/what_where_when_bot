@@ -4,6 +4,7 @@ from typing import Optional
 
 from kts_backend.store import Store
 
+from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject
 
 class Sendler:
     def __init__(self, store: Store):
@@ -22,6 +23,19 @@ class Sendler:
 
     async def send(self):
         while self.is_running:
-            message = await self.store.messages_queue.get()
+            message = await self.store.messages_queue.get()           
             if message != 0:
                 await self.store.vk_api.send_message(message)
+                if message.text == "*Вопрос* %0A На размышление даётся 1 минута":
+                    await self.store.updates_queue.put(
+                        Update(
+                            type="message_new",
+                            object=UpdateObject(
+                                id=None,
+                                user_id=message.user_id,
+                                peer_id=message.peer_id,
+                                text="сообщение для старта таймера",
+                                body="сообщение для старта таймера",
+                            ),
+                        )
+                    )     

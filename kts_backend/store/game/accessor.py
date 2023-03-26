@@ -25,7 +25,7 @@ class GameAccessor(BaseAccessor):
             games = []
             for game_obj in result.scalars():
                 games.append(
-                    Game(game_obj.id, game_obj.created_at, chat_id, [])
+                    Game(game_obj.id, game_obj.created_at, chat_id,[])
                 )
             new_game = games[0]
 
@@ -46,14 +46,16 @@ class GameAccessor(BaseAccessor):
         stmt = insert(PlayerModel).values(
             id=vk_id, name=name, last_name=last_name
         )
+        try:
+            async with self.app.database.session() as session:
+                result = await session.execute(stmt)
+                await session.commit()
 
-        async with self.app.database.session() as session:
-            result = await session.execute(stmt)
-            await session.commit()
-
-            return Player(
-                vk_id=vk_id, name=name, last_name=last_name, score=None
-            )
+        except:
+            pass
+        return Player(
+            vk_id=vk_id, name=name, last_name=last_name, score=None
+        )
 
     async def create_game_score(
         self, game_id: int, player_id: int
@@ -104,3 +106,7 @@ class GameAccessor(BaseAccessor):
                 chat_id=chat_id,
                 players=players,
             )
+
+    async def get_players(self, chat_id: int) -> list[Player]:
+        game = await self.get_game(chat_id)
+        return  game.players
