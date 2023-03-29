@@ -41,6 +41,7 @@ class VkApiAccessor(BaseAccessor):
         self.sendler = Sendler(app.store)
         self.logger.info("start sending")
         await self.sendler.start()
+        print("_______________________________________________")
 
     async def disconnect(self, app: "Application"):
         if self.poller:
@@ -110,7 +111,7 @@ class VkApiAccessor(BaseAccessor):
             else:
                 await self.app.store.updates_queue.put(
                     Update(
-                        type= "Nothing",
+                        type="Nothing",
                         object=UpdateObject(
                             id=None,
                             user_id=None,
@@ -119,7 +120,7 @@ class VkApiAccessor(BaseAccessor):
                             body=None,
                         ),
                     )
-                )                
+                )
 
     async def send_message(self, message: Message) -> None:
         params = {
@@ -127,12 +128,12 @@ class VkApiAccessor(BaseAccessor):
             "peer_id": message.peer_id,
             "message": message.text,
             "access_token": self.app.config.bot.token,
-        }  
+        }
 
         if message.keyboard is not None:
             params["keyboard"] = json.dumps(message.keyboard)
 
-        if  message.user_id == message.peer_id:
+        if message.user_id == message.peer_id:
             params["user_id"] = message.user_id
 
         async with self.session.get(
