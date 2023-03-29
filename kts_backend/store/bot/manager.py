@@ -126,7 +126,7 @@ class GameState:
                     break
 
             if (self.points == 5 and is_correct) or (
-                self.round_num + 1 - self.points == 5 and not is_correct
+                self.round_num - self.points == 5 and not is_correct
             ):
                 self.current_state = self.final
                 keyboard = {
