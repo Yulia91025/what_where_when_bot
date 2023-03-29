@@ -138,5 +138,5 @@ async def game_2(db_session: AsyncSession) -> Game:
         id=new_game.id,
         created_at=new_game.created_at,
         chat_id=chat_id,
-        players=[]
+        players=[],
     )

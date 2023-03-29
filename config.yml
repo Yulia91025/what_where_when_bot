@@ -1,9 +1,14 @@
+session:
+  key: CaY5iCkYtN7DqXdiYK1BvmGrQuaSA4Tl4bEk9my0jc0=
+admin:
+  email: admin@admin.com
+  password: admin
 database:
   host: 0.0.0.0
   port: 5432
   user: kts_user
   password: kts_pass
-  database: kts
+  database: botdb
 bot:
   token: vk1.a.Hj8Tp_a8eaq8L_P52WlJC5a_9UbSirB-iDxgOF3MBJAvTg-bQawqZyr3zZ5aPXzxkzJJzzLvXEIyAZNCxt3waLqWqKkoFZkepUGTgGg1aaC55HSiXAqGEItS_F34XX79UweuHz-HGkUPWKSX8hA5uoT70VWWsjAj_5EhpL-XASDAcZi7Nju5QOEnekfcw4QdOr-W_T5D7io1zD2ZtbK_4Q
   group_id: 218813853

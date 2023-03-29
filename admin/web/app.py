@@ -1,27 +1,21 @@
-from typing import Sequence, Callable, Optional
+from typing import Optional
 
 from aiohttp.web import (
     Application as AiohttpApplication,
-    View as AiohttpView,
     Request as AiohttpRequest,
+    View as AiohttpView,
 )
-
-# from pyparsing import Optional
-
 from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_session import setup as session_setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
-from kts_backend.store import Store, setup_store
+from admin.admin.models import Admin
+from admin.store import Store, setup_store
 from database.database import Database
-from kts_backend.web.config import Config, setup_config
-from kts_backend.web.logger import setup_logging
-
-from kts_backend import __appname__, __version__
-from .urls import register_urls
-
-
-__all__ = ("ApiApplication",)
+from admin.web.config import Config, setup_config
+from admin.web.logger import setup_logging
+from admin.web.middlewares import setup_middlewares
+from admin.web.routes import setup_routes
 
 
 class Application(AiohttpApplication):
@@ -31,6 +25,8 @@ class Application(AiohttpApplication):
 
 
 class Request(AiohttpRequest):
+    admin: Optional[Admin] = None
+
     @property
     def app(self) -> Application:
         return super().app()
@@ -60,9 +56,11 @@ app = Application()
 def setup_app(config_path: str, database: Database) -> Application:
     setup_logging(app)
     setup_config(app, config_path)
-    # session_setup(app, EncryptedCookieStorage(app.config.session.key))
+    session_setup(app, EncryptedCookieStorage(app.config.session.key))
+    setup_routes(app)
     setup_aiohttp_apispec(
-        app, title="Vk Quiz Bot", url="/docs/json", swagger_path="/docs"
+        app, title="Admin", url="/docs/json", swagger_path="/docs"
     )
+    setup_middlewares(app)
     setup_store(app, database)
     return app
