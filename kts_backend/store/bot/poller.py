@@ -22,21 +22,8 @@ class Poller:
 
     async def poll(self):
         while self.is_running:
-            updt_for_timer = False
-            chat_id = None
-            for chat in self.store.bots_manager.timer_flags:
-                if self.store.bots_manager.timer_flags[chat]:
-                    updt_for_timer = True
-                    chat_id = chat
-                    break
-            if updt_for_timer:
-                self.store.bots_manager.timer_flags[chat_id] = False
-                update = await self.store.updates_queue.get()
-                if update != 0:
-                    await self.store.bots_manager.handle_updates(update)
-            else:
-                if self.store.updates_queue.empty():
-                    await self.store.vk_api.poll()
-                update = await self.store.updates_queue.get()
-                if update != 0:
-                    await self.store.bots_manager.handle_updates(update)
+            if self.store.updates_queue.empty():
+                await self.store.vk_api.poll()
+            update = await self.store.updates_queue.get()
+            if update != 0:
+                await self.store.bots_manager.handle_updates(update)

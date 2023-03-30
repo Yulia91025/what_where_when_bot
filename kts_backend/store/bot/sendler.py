@@ -27,16 +27,3 @@ class Sendler:
             message = await self.store.messages_queue.get()
             if message != 0:
                 await self.store.vk_api.send_message(message)
-                if "На размышление даётся 1 минута" in message.text:
-                    await self.store.updates_queue.put(
-                        Update(
-                            type="message_new",
-                            object=UpdateObject(
-                                id=None,
-                                user_id=message.user_id,
-                                peer_id=message.peer_id,
-                                text="сообщение для старта таймера",
-                                body="сообщение для старта таймера",
-                            ),
-                        )
-                    )

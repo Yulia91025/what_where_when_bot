@@ -22,7 +22,6 @@ class GameState:
         self.captain_id = captain_id
         self.bot = bot
 
-        self.start_timer = False
         from kts_backend.store.bot.timer import Timer
 
         self.t = Timer(self)
@@ -80,23 +79,17 @@ class GameState:
                 + "На размышление даётся 1 минута."
             )
 
-            self.start_timer = True
             self.current_state = self.timer
-            self.bot.timer_flags[self.chat_id] = True
 
             await self.new_message(update, string, "Ответить раньше")
 
     async def _create_timer(self, update):
-        if self.start_timer:
-            self.start_timer = False
-            await self.t.start(update)
-        else:
-            if "Ответить раньше" in update.object.text:
-                self.current_state = self.choose_resp
-                await self.new_message(
-                    update,
-                    f"[id{self.captain_id}|Капитан], укажите на отвечающего (через @)",
-                )
+        if "Ответить раньше" in update.object.text:
+            self.current_state = self.choose_resp
+            await self.new_message(
+                update,
+                f"[id{self.captain_id}|Капитан], укажите на отвечающего (через @)",
+            )
 
     async def _create_respondent(self, update):
         if update.object.user_id == self.captain_id:
@@ -242,13 +235,18 @@ class GameState:
             )
         )
 
+        if "На размышление даётся 1 минута" in text:
+            await self.t.start(update, 1)
+
+        if "укажите на отвечающего (через @)" in text:
+            await self.t.start(update, 2)
+
 
 class BotManager:
     def __init__(self, app: "Application"):
         self.app = app
 
         self.current_game_states = []
-        self.timer_flags = dict()
 
         self.logger = getLogger("handler")
 
@@ -260,7 +258,6 @@ class BotManager:
                 is_end = await game_state.send(update)
                 if is_end:
                     self.current_game_states.remove(game_state)
-                    self.timer_flags.pop(chat_id)
             elif "Начнём игру!" in update.object.text:
                 captain_id = update.object.user_id
                 users = await self.app.store.vk_api._get_members(chat_id)
@@ -273,7 +270,6 @@ class BotManager:
                 await game_state.send(update)
                 await game_state.send(update)
                 self.current_game_states.append(game_state)
-                self.timer_flags[chat_id] = True
             elif str(self.app.config.bot.group_id) in update.object.text:
                 keyboard = {
                     "inline": True,

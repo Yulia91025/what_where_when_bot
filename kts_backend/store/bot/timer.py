@@ -13,25 +13,105 @@ class Timer:
         self.time = None
         self.task: Optional[Task] = None
 
-    async def start(self, update):
+    async def start(self, update, t1_or_t2):
         self.is_running = True
         self.time = time.time()
-        self.task = asyncio.create_task(self.t(update))
+        if t1_or_t2 == 1:
+            self.task = asyncio.create_task(self.t1(update))
+        elif t1_or_t2 == 2:
+            self.task = asyncio.create_task(self.t2(update))
 
     async def stop(self):
         self.is_running = False
         await self.task.cancel()
 
-    async def t(self, update):
-        while self.is_running and time.time() - self.time < 60.0:
-            if self.gamestate.current_state == self.gamestate.choose_resp:
-                self.is_running = False
-            else:
-                await self.gamestate.bot.app.store.vk_api.poll()
-                await self.gamestate.bot.app.store.updates_queue.get()
+    async def t1(self, update):
+        await asyncio.sleep(60)
+        if self.gamestate.current_state == self.gamestate.choose_resp:
+            self.is_running = False
         if self.gamestate.current_state == self.gamestate.timer:
             self.gamestate.current_state = self.gamestate.choose_resp
             await self.gamestate.new_message(
                 update,
                 f"Время вышло! [id{self.gamestate.captain_id}|Капитан], укажите на отвечающего (через @)",
             )
+
+    async def t2(self, update):
+        await asyncio.sleep(120)
+        if (
+            self.gamestate.current_state == self.gamestate.question
+            or self.gamestate.current_state == self.gamestate.final
+        ):
+            self.is_running = False
+        if (
+            self.gamestate.current_state == self.gamestate.choose_resp
+            or self.gamestate.current_state == self.gamestate.response
+        ):
+            await self.checking(update)
+
+    async def checking(self, update):
+        Enter = "%0A"
+
+        correct_answers = self.gamestate.current_question.answers
+        correct_answers_titles = []
+        for corr_ans in correct_answers:
+            correct_answers_titles.append(corr_ans.title)
+
+        if self.gamestate.round_num - self.gamestate.points == 5:
+            self.gamestate.current_state = self.gamestate.final
+            keyboard = {
+                "inline": True,
+                "one_time": False,
+                "buttons": [
+                    [
+                        {
+                            "action": {
+                                "type": "text",
+                                "label": "Подвести итоги",
+                            }
+                        },
+                    ]
+                ],
+            }
+        else:
+            self.gamestate.current_state = self.gamestate.question
+            keyboard = {
+                "inline": True,
+                "one_time": False,
+                "buttons": [
+                    [
+                        {
+                            "action": {
+                                "type": "text",
+                                "label": "Промежуточные результаты",
+                            }
+                        },
+                        {
+                            "action": {
+                                "type": "text",
+                                "label": "Следующий вопрос",
+                            }
+                        },
+                    ]
+                ],
+            }
+
+        corr_ans = correct_answers_titles[0]
+        string = (
+            "Время вышло! Вы ничего не ответили, поэтому очко уходит телезрителям."
+            + Enter
+            + "Правильный ответ: "
+            + corr_ans.capitalize()
+        )
+        if len(correct_answers_titles) > 1:
+            string += Enter + "Так же засчитывались ответы: "
+            for i in range(1, len(correct_answers_titles)):
+                string += Enter + correct_answers_titles[i].capitalize()
+        await self.gamestate.new_message(update, string, None, keyboard)
+
+        self.gamestate.round_num += 1
+
+        if self.gamestate.round_num < 11:
+            self.gamestate.current_question = self.gamestate.game.questions[
+                self.gamestate.round_num
+            ]
