@@ -21,4 +21,5 @@ class Message:
     user_id: int
     peer_id: int
     text: str
-    keyboard: dict
+    keyboard: dict = None
+    attachment: str = None

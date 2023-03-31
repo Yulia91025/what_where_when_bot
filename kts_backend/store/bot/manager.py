@@ -1,4 +1,4 @@
-import time
+import random
 import typing
 from logging import getLogger
 
@@ -30,6 +30,21 @@ class GameState:
         self.round_num = 0
         self.round_resp = dict()
         self.current_question = self.game.questions[0]
+
+        self.player_win_attachments = [
+            "doc370512811_626810933",
+            "doc146519153_618688387",
+            "doc12356819_599724021",
+            "doc445215334_575602109",
+            "doc138266642_604261251",
+            "doc1839095_542216537",
+        ]
+        self.player_lost_attachments = [
+            "doc159273518_624854260",
+            "doc577953304_663068266",
+            "doc288439887_502139874",
+            "doc130496292_577271566",
+        ]
 
         self.start = self._create_start
         self.question = self._create_question
@@ -71,7 +86,7 @@ class GameState:
             await self.new_message(update, string, "Следующий вопрос")
         else:
             question = self.current_question
-            string = "Раунд " + str(self.round_num + 1) + Enter
+            string = "Раунд " + str(self.round_num + 1) + Enter + Enter
             string += (
                 question.title
                 + Enter
@@ -114,7 +129,9 @@ class GameState:
 
             is_correct = False
             for ans in correct_answers_titles:
-                if ans.lower() in update.object.text.lower():
+                ans_beauty = ans.lower()
+                ans_beauty = ans_beauty.replace(".", "")
+                if ans_beauty in update.object.text.lower():
                     is_correct = True
                     break
 
@@ -161,12 +178,24 @@ class GameState:
 
             if is_correct:
                 self.points += 1
+                indx_attachment = random.randint(
+                    0, len(self.player_win_attachments) - 1
+                )
+                attachment = self.player_win_attachments[indx_attachment]
                 await self.bot.app.store.game.inc_game_points(self.game.id)
                 await self.new_message(
-                    update, "Верно! У вас плюс 1 очко", None, keyboard
+                    update,
+                    "Верно! У вас плюс 1 очко",
+                    None,
+                    keyboard,
+                    attachment,
                 )
             else:
                 corr_ans = correct_answers_titles[0]
+                indx_attachment = random.randint(
+                    0, len(self.player_lost_attachments) - 1
+                )
+                attachment = self.player_lost_attachments[indx_attachment]
                 string = (
                     "Неверно"
                     + Enter
@@ -177,7 +206,9 @@ class GameState:
                     string += Enter + "Так же засчитывались ответы: "
                     for i in range(1, len(correct_answers_titles)):
                         string += Enter + correct_answers_titles[i].capitalize()
-                await self.new_message(update, string, None, keyboard)
+                await self.new_message(
+                    update, string, None, keyboard, attachment
+                )
 
             self.round_num += 1
 
@@ -214,7 +245,12 @@ class GameState:
             raise Exception
 
     async def new_message(
-        self, update: Update, text: str, keyboard_text=None, keyboard=None
+        self,
+        update: Update,
+        text: str,
+        keyboard_text=None,
+        keyboard=None,
+        attachment=None,
     ):
         if keyboard_text is not None:
             keyboard = {
@@ -232,6 +268,7 @@ class GameState:
                 text=text,
                 peer_id=update.object.peer_id,
                 keyboard=keyboard,
+                attachment=attachment,
             )
         )
 
@@ -261,15 +298,25 @@ class BotManager:
             elif "Начнём игру!" in update.object.text:
                 captain_id = update.object.user_id
                 users = await self.app.store.vk_api._get_members(chat_id)
-                game = await self.app.store.game.create_game(
-                    chat_id=chat_id, users=users
-                )
-                game_state = GameState(
-                    game=game, chat_id=chat_id, captain_id=captain_id, bot=self
-                )
-                await game_state.send(update)
-                await game_state.send(update)
-                self.current_game_states.append(game_state)
+                try:
+                    game = await self.app.store.game.create_game(
+                        chat_id=chat_id, users=users
+                    )
+                    game_state = GameState(
+                        game=game, chat_id=chat_id, captain_id=captain_id, bot=self
+                    )
+                    await game_state.send(update)
+                    await game_state.send(update)
+                    self.current_game_states.append(game_state)
+                except:
+                    text = "Извините, пока в базе данных недостаточно вопросов для начала игры :("
+                    await self.app.store.vk_api.send_message(
+                        Message(
+                            user_id=update.object.user_id,
+                            text=text,
+                            peer_id=update.object.peer_id
+                        )
+                    )
             elif str(self.app.config.bot.group_id) in update.object.text:
                 keyboard = {
                     "inline": True,
@@ -299,6 +346,7 @@ class BotManager:
                         text=text,
                         peer_id=update.object.peer_id,
                         keyboard=keyboard,
+                        attachment="doc151911296_516026762",
                     )
                 )
         else:

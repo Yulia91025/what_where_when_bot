@@ -10,6 +10,7 @@ class Question:
     id: int
     title: str
     answers: list["Answer"]
+    accepted: bool = False
 
 
 @dataclass
@@ -24,6 +25,7 @@ class QuestionModel(db):
     answers = relationship(
         "AnswerModel", back_populates="question", passive_deletes=True
     )
+    accepted = Column(Boolean)
 
 
 class AnswerModel(db):
