@@ -35,10 +35,7 @@ class QuizAccessor(BaseAccessor):
             if ans.title is None:
                 raise HTTPBadRequest
         try:
-            stmt = insert(QuestionModel).values(
-                title=title,
-                accepted=accepted
-            )
+            stmt = insert(QuestionModel).values(title=title, accepted=accepted)
         except Exception as e:
             raise IntegrityError("'title' is required field", title, e.orig)
         try:
@@ -66,7 +63,12 @@ class QuizAccessor(BaseAccessor):
             answers = []
             for answer_obj in result.scalars():
                 answers.append(Answer(answer_obj.title))
-            question = Question(question_obj.id, question_obj.title, answers, question_obj.accepted)
+            question = Question(
+                question_obj.id,
+                question_obj.title,
+                answers,
+                question_obj.accepted,
+            )
             return question
 
     async def get_question_by_id(self, id: int) -> Question | None:
@@ -83,7 +85,12 @@ class QuizAccessor(BaseAccessor):
             answers = []
             for answer_obj in result.scalars():
                 answers.append(Answer(answer_obj.title))
-            question = Question(question_obj.id, question_obj.title, answers, question_obj.accepted)
+            question = Question(
+                question_obj.id,
+                question_obj.title,
+                answers,
+                question_obj.accepted,
+            )
             return question
 
     async def list_questions(self) -> list[Question]:
@@ -95,7 +102,7 @@ class QuizAccessor(BaseAccessor):
                 question = await self.get_question_by_title(question_obj.title)
                 questions.append(question)
             return questions
-        
+
     async def list_unverified_questions(self) -> list[Question]:
         questions = []
         stmt = select(QuestionModel).where(QuestionModel.accepted == False)
@@ -115,7 +122,7 @@ class QuizAccessor(BaseAccessor):
                 question = await self.get_question_by_title(question_obj.title)
                 questions.append(question)
             return questions
-                
+
     async def delete_question(self, id: int):
         stmt = delete(QuestionModel).where(QuestionModel.id == id)
         async with self.app.database.session() as session:
@@ -132,29 +139,38 @@ class QuizAccessor(BaseAccessor):
         for i in indxs:
             questions.append(all_questions[i])
         return questions
-    
+
     async def question_acceptance(self, id: int, accepted: bool):
         if not accepted:
             await self.delete_question(id)
         else:
-            stmt = update(QuestionModel).values(accepted = True).where(QuestionModel.id == id)
+            stmt = (
+                update(QuestionModel)
+                .values(accepted=True)
+                .where(QuestionModel.id == id)
+            )
             async with self.app.database.session() as session:
                 await session.execute(stmt)
                 await session.commit()
 
-    async def edit_question(self, id: int, title: str = None, answers: list[Answer] = None):
+    async def edit_question(
+        self, id: int, title: str = None, answers: list[Answer] = None
+    ):
         if title is not None:
-            stmt = update(QuestionModel).values(title = title).where(QuestionModel.id == id)
+            stmt = (
+                update(QuestionModel)
+                .values(title=title)
+                .where(QuestionModel.id == id)
+            )
             async with self.app.database.session() as session:
                 await session.execute(stmt)
                 await session.commit()
         if answers is not None:
             await self.edit_answers(id, answers)
 
-    async def edit_answers(self, question_id: int, new_answers = list[Answer]):
+    async def edit_answers(self, question_id: int, new_answers=list[Answer]):
         stmt = delete(AnswerModel).where(AnswerModel.question_id == question_id)
         async with self.app.database.session() as session:
             await session.execute(stmt)
             await session.commit()
         await self.create_answers(question_id, new_answers)
-

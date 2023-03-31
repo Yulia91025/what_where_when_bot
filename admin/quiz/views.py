@@ -1,9 +1,9 @@
 from aiohttp_apispec import querystring_schema, request_schema, response_schema
 from admin.quiz.schemes import (
-    ListQuestionSchema, 
-    QuestionSchema, 
+    ListQuestionSchema,
+    QuestionSchema,
     QuestionAcceptanceSchema,
-    QuestionEditSchema
+    QuestionEditSchema,
 )
 from admin.quiz.models import Answer
 from admin.web.schemes import OkResponseSchema
@@ -75,19 +75,22 @@ class QuestionParseView(AuthRequiredMixin, View):
                 pass
         raw_questions = [
             QuestionSchema().dump(question) for question in questions
-        ]            
+        ]
         return json_response(data={"questions": raw_questions})
-    
+
 
 class UnverifiedQuestionsListView(AuthRequiredMixin, View):
     @docs(tags=["quiz"], summary="List unverified questions")
-    @response_schema(ListQuestionSchema, 200)   
+    @response_schema(ListQuestionSchema, 200)
     async def get(self):
-        questions = await self.request.app.store.quizzes.list_unverified_questions()
+        questions = (
+            await self.request.app.store.quizzes.list_unverified_questions()
+        )
         raw_questions = [
             QuestionSchema().dump(question) for question in questions
         ]
-        return json_response(data={"questions": raw_questions})         
+        return json_response(data={"questions": raw_questions})
+
 
 class QuestionAcceptanceView(AuthRequiredMixin, View):
     @docs(tags=["quiz"], summary="Question acceptance")
@@ -96,13 +99,18 @@ class QuestionAcceptanceView(AuthRequiredMixin, View):
     async def post(self):
         data = self.request["data"]
         if not data:
-            raise HTTPBadRequest 
+            raise HTTPBadRequest
         question_id = data["id"]
         question_accepted = data["accepted"]
-        await self.request.app.store.quizzes.question_acceptance(question_id, question_accepted)
-        question = await self.request.app.store.quizzes.get_question_by_id(question_id)
+        await self.request.app.store.quizzes.question_acceptance(
+            question_id, question_accepted
+        )
+        question = await self.request.app.store.quizzes.get_question_by_id(
+            question_id
+        )
         return json_response(data=QuestionSchema().dump(question))
-    
+
+
 class QuestionEditView(AuthRequiredMixin, View):
     @docs(tags=["quiz"], summary="Edit answers")
     @request_schema(QuestionEditSchema)
@@ -110,7 +118,7 @@ class QuestionEditView(AuthRequiredMixin, View):
     async def post(self):
         data = self.request["data"]
         if not data:
-            raise HTTPBadRequest 
+            raise HTTPBadRequest
         question_id = data["id"]
         try:
             question_title = data["title"]
@@ -120,12 +128,14 @@ class QuestionEditView(AuthRequiredMixin, View):
             answers_str = data["answers"]
             answers = []
             for ans in answers_str:
-                answers.append(
-                    Answer(title = ans["title"])
-                )            
+                answers.append(Answer(title=ans["title"]))
         except KeyError:
             answers = None
 
-        await self.request.app.store.quizzes.edit_question(question_id, question_title, answers)
-        question = await self.request.app.store.quizzes.get_question_by_id(question_id)
-        return json_response(data=QuestionSchema().dump(question))    
+        await self.request.app.store.quizzes.edit_question(
+            question_id, question_title, answers
+        )
+        question = await self.request.app.store.quizzes.get_question_by_id(
+            question_id
+        )
+        return json_response(data=QuestionSchema().dump(question))

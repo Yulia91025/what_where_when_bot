@@ -6,7 +6,7 @@ from admin.quiz.views import (
     QuestionParseView,
     UnverifiedQuestionsListView,
     QuestionAcceptanceView,
-    QuestionEditView
+    QuestionEditView,
 )
 
 if typing.TYPE_CHECKING:
@@ -17,6 +17,8 @@ def setup_routes(app: "Application"):
     app.router.add_view("/quiz.add_question", QuestionAddView)
     app.router.add_view("/quiz.list_questions", QuestionListView)
     app.router.add_view("/quiz.parse_questions", QuestionParseView)
-    app.router.add_view("/quiz.list_unverified_questions", UnverifiedQuestionsListView)
+    app.router.add_view(
+        "/quiz.list_unverified_questions", UnverifiedQuestionsListView
+    )
     app.router.add_view("/quiz.accept_question", QuestionAcceptanceView)
     app.router.add_view("/quiz.edit_question", QuestionEditView)

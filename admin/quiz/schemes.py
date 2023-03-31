@@ -17,10 +17,11 @@ class ListQuestionSchema(Schema):
 
 
 class QuestionAcceptanceSchema(Schema):
-    id = fields.Int(required=True) 
-    accepted = fields.Boolean(required=True)  
+    id = fields.Int(required=True)
+    accepted = fields.Boolean(required=True)
+
 
 class QuestionEditSchema(Schema):
-    id = fields.Int(required=True) 
+    id = fields.Int(required=True)
     title = fields.Str(required=False)
     answers = fields.Nested("AnswerSchema", many=True, required=False)

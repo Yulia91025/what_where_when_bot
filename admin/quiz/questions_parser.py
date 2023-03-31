@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 
 import aiohttp
 
+
 class QuestionParser:
     async def parse_main(self):
         main_url = "https://db.chgk.info"
@@ -65,7 +66,7 @@ class QuestionParser:
                             or "картинка" in question.lower()
                             or "фото" in question.lower()
                             or "на картинке" in question.lower()
-                            or "на фото" in question.lower()                
+                            or "на фото" in question.lower()
                             or "перед вами" in question.lower()
                             or "qr-код" in question.lower()
                             or "внимание" in question.lower()

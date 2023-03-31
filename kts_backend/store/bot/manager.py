@@ -303,7 +303,10 @@ class BotManager:
                         chat_id=chat_id, users=users
                     )
                     game_state = GameState(
-                        game=game, chat_id=chat_id, captain_id=captain_id, bot=self
+                        game=game,
+                        chat_id=chat_id,
+                        captain_id=captain_id,
+                        bot=self,
                     )
                     await game_state.send(update)
                     await game_state.send(update)
@@ -314,7 +317,7 @@ class BotManager:
                         Message(
                             user_id=update.object.user_id,
                             text=text,
-                            peer_id=update.object.peer_id
+                            peer_id=update.object.peer_id,
                         )
                     )
             elif str(self.app.config.bot.group_id) in update.object.text:
