@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    body {
+        min-height: 100vh;
+        background: linear-gradient(#04111a, #580815) no-repeat;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+        text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+    }
+
+    #question {
+        display: flex;
+        flex-direction: column;
+        color: rgb(180, 180, 180);
+        text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        padding: 20px;
+        border-radius: 2px;
+        padding-left: 100px;
+        padding-right: 100px;
+        padding-top: 20px ;
+        padding-bottom: 20px;
+    }
+
+    .button {
+        position: relative;
+        left: 50%;
+        transform: translate(-50%, 0); 
+        display: flex;
+        justify-content: center;
+        width: 70%;
+        margin-bottom: 20px;
+        text-align: center;
+        margin-top: 10px;
+        background-color: white;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 20%;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        padding: 20px;
+        border-radius: 2px;
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .form {
+        text-align: center;
+        width: 70%;
+        margin-bottom: 20px;
+    }
+
+    .form__input, .form__button {
+        box-sizing: border-box;
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        padding: 10px;
+        border-radius: 2px;
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .form__button {
+        text-align: center;
+        margin-top: 10px;
+        background-color: white;
+        cursor: pointer;
+        width: 30%;
+        margin-left: 70%;
+    }
+
+    .form__input:focus, .form__button:hover {
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+    }
+
+</style>
+{% endblock %}   

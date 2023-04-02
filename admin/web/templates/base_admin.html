@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block style %}
+<style>
+    html {
+        background: url(https://i.ibb.co/GFmWf0W/Pics-Art-23-04-02-15-55-18-911.jpg);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+        text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+    }
+
+    #main {
+        display: flex;
+        text-align: center;
+        align-items: center;
+        flex-direction: column;
+        color: rgb(180, 180, 180);
+        text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        padding: 20px;
+        border-radius: 2px;
+    }
+
+    .form {
+        width: 70%;
+        margin-bottom: 20px;
+    }
+
+    .form__button {
+        text-align: center;
+        margin-top: 10px;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .form__input, .form__button {
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        padding: 10px;
+        border-radius: 2px;
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .form__input:focus, .form__button:hover {
+        -webkit-transition: 0.3s;
+        -moz-transition: 0.3s;
+        transition: 0.3s;
+        -webkit-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+    }
+     
+</style>
+{% endblock %}   

@@ -1,0 +1,49 @@
+{% extends 'base_form.html' %}
+{% block title %}
+{{ title }}
+{% endblock %}
+{% block body %}
+<body>
+<div>
+    <h1>{{title}}</h1>
+    <div id="main">
+            <form method="post" action="/quiz.add_question" name="myForm" >
+                <label for="title">Текст вопроса: </label>
+                <input class="form__input" type="text" name="title" /><br />
+                <label for="answers">Ответ :</label>
+                <input class="form__input" type="text" name="answers" /><br />
+                <input class="form__button" value="Добавить вопрос" type="button" onclick="submitform()"/>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function submitform(){
+        let form = document.forms[0];
+        if (!form.title.value || !form.answers.value) alert("Вы забыли указать одно из полей!")
+        else {
+            var data = {
+                "title": form.title.value,
+                "answers": [
+                    {
+                        "title": form.answers.value
+                    }
+                ]
+            };
+            var xhr = new XMLHttpRequest();
+            xhr.open(form.method, form.action, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            var status;
+            xhr.onload = () => {
+                status = xhr.status;
+                if (status == '409') alert("Такой вопрос уже существует!");
+                else alert("Впорос успешно добавлен");
+            };
+            xhr.send(JSON.stringify(data));   
+        }  
+    }
+</script>
+{% endblock %}

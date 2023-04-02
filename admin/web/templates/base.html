@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block style %}{% endblock %}
+    <style>
+        html {
+            font-family: Arial Narrow, "sans-serif";
+            background: url(https://i.ibb.co/GFmWf0W/Pics-Art-23-04-02-15-55-18-911.jpg);
+        }
+
+        h2 {
+            font-size:xx-large;
+            text-align: left;
+            margin: 20px;
+            color: white;
+            text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+        }
+
+        a {
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+        }
+
+        #menu{
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+
+        header {
+            position:relative;
+            background-color: #010002;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 2px solid black;
+            display: flex;
+            flex-direction:row;
+            font-size: 20px;
+            align-items: center;
+            color: rgb(180, 180, 180);
+            text-shadow: 0 2px 5px rgba(150, 150, 150, 0.8);
+        }
+
+        nav{
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        nav ul{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display:inline;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        nav ul1{
+            text-align: right;
+            margin-top: 5px;
+            list-style: none;            
+            display: column;
+            margin-top: 1px;
+            /* margin-left: 10%; */
+            /* margin-right: -20%; */
+            float: right;
+            margin-bottom: 0px;
+        }
+        nav ul1 li{
+            padding: 5px;
+            margin-top: 1px;
+            margin-left: 100%;
+            margin-right: -100%;
+        }
+        
+        nav ul2{
+            text-align: right;
+            margin-top: 5px;
+            list-style: none;            
+            background-color: #010002;
+            display: column;
+            margin-top: 1px;
+            float: right;
+            margin-bottom: 0px;
+            border: 2px solid black;
+        }
+
+        nav ul2 li{
+            color: #04111a;
+            padding: 7px;
+        }
+        
+    </style>
+</head>
+<header>
+    <nav>
+    <ul class = "menu">
+        <div> <h2>ВОПРОСЫ БОТА "ЧТО? ГДЕ? КОГДА?"</h2> </div>
+            <li><a href = "/quiz.new_question">Добавить вопрос</a></li>
+            <li><a href = "/quiz.list_questions">Список всех вопросов</a></li>
+            <li><a href = "/quiz.list_unverified_questions">Напроверенные вопросы</a></li>
+            <li><a href = "/quiz.list_accepted_questions">Принятые вопросы</a></li>
+            <li><a href = "/quiz.parse_questions">Загрузить вопросы</a></li>
+            <li><a href = "/quiz.find_question">Найти вопрос</a></li>
+    </ul> 
+    <ul1>
+        <li><a>Войти или зарегистрироваться </a></li>
+        <li><a>Текущий админ</a></li>
+    </ul1>
+    <ul2>
+        <li><a href = "/admin.login">Войти или зарегистрироваться </a></li>
+        <li><a href = "/admin.current">Текущий админ</a></li>
+    </ul2>
+    </nav>
+</header>      
+</head>
+{% block body %}{% endblock %}
+{% block script %}{% endblock %}
+</html>

@@ -156,7 +156,7 @@ class QuizAccessor(BaseAccessor):
     async def edit_question(
         self, id: int, title: str = None, answers: list[Answer] = None
     ):
-        if title is not None:
+        if title is not None and title:
             stmt = (
                 update(QuestionModel)
                 .values(title=title)
@@ -165,7 +165,7 @@ class QuizAccessor(BaseAccessor):
             async with self.app.database.session() as session:
                 await session.execute(stmt)
                 await session.commit()
-        if answers is not None:
+        if answers is not None and answers[0].title:
             await self.edit_answers(id, answers)
 
     async def edit_answers(self, question_id: int, new_answers=list[Answer]):
