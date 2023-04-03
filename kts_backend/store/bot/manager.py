@@ -64,8 +64,8 @@ class GameState:
             points = await self.bot.app.store.game.get_current_game_points(
                 self.game.id
             )
-            string = "Количество очков знатоков :" + str(points) + Enter
-            string += "Количество очков телезрителей :" + str(
+            string = "Количество очков знатоков : " + str(points) + Enter
+            string += "Количество очков телезрителей : " + str(
                 len(self.round_resp) - points
             )
             await self.new_message(update, string, "Следующий вопрос")
@@ -114,7 +114,11 @@ class GameState:
 
             is_correct = False
             for ans in correct_answers_titles:
-                if ans.lower() in update.object.text.lower():
+                ans_beauty = ans.lower()
+                ans_beauty = ans_beauty.replace(".", "")
+                ans_beauty = ans_beauty.lstrip()
+                ans_beauty = ans_beauty.rstrip()
+                if ans_beauty in update.object.text.lower():
                     is_correct = True
                     break
 
