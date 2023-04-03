@@ -6,10 +6,12 @@ from kts_backend.store.models.models import (
     GameModel,
     PlayerModel,
     GameScoreModel,
+    GameQuestionModel,
 )
 from kts_backend.store.users.dataclasses import User
+from admin.quiz.models import Question, QuestionModel
 
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, update
 
 
 class GameAccessor(BaseAccessor):
@@ -25,7 +27,7 @@ class GameAccessor(BaseAccessor):
             games = []
             for game_obj in result.scalars():
                 games.append(
-                    Game(game_obj.id, game_obj.created_at, chat_id,[])
+                    Game(game_obj.id, game_obj.created_at, chat_id, [])
                 )
             new_game = games[0]
 
@@ -38,6 +40,8 @@ class GameAccessor(BaseAccessor):
             players[len(players) - 1].gamescore = gamescore
 
         new_game.players = players
+        questions = await self.app.store.quiz.get_11_random_questions()
+        new_game.questions = questions
         return new_game
 
     async def create_player(
@@ -53,9 +57,7 @@ class GameAccessor(BaseAccessor):
 
         except:
             pass
-        return Player(
-            vk_id=vk_id, name=name, last_name=last_name, score=None
-        )
+        return Player(vk_id=vk_id, name=name, last_name=last_name, score=None)
 
     async def create_game_score(
         self, game_id: int, player_id: int
@@ -100,13 +102,58 @@ class GameAccessor(BaseAccessor):
                     )
                 )
 
+            stmt = select(GameQuestionModel).where(
+                GameQuestionModel.game_id == game_obj.id
+            )
+            result = await session.execute(stmt)
+            questions = []
+            for gamequestion_obj in result.scalars():
+                question = await self.app.store.quiz.get_question_by_id(
+                    gamequestion_obj.question_id
+                )
+                questions.append(question)
+
+            if len(questions) == 0:
+                questions = None
+
             return Game(
                 id=game_obj.id,
                 created_at=game_obj.created_at,
                 chat_id=chat_id,
                 players=players,
+                questions=questions,
             )
 
     async def get_players(self, chat_id: int) -> list[Player]:
         game = await self.get_game(chat_id)
-        return  game.players
+        return game.players
+
+    async def add_game_question(self, game_id: int, question_id: int):
+        stmt = insert(GameQuestionModel).values(
+            game_id=game_id, question_id=question_id
+        )
+        async with self.app.database.session() as session:
+            result = await session.execute(stmt)
+            await session.commit()
+
+    async def get_game_questions(self, chat_id: int) -> list[Question]:
+        game = await self.get_game(chat_id)
+        return game.questions
+
+    async def inc_game_points(self, game_id: int):
+        stmt = (
+            update(GameScoreModel)
+            .values(points=GameScoreModel.points + 1)
+            .where(GameScoreModel.game_id == game_id)
+        )
+        async with self.app.database.session() as session:
+            result = await session.execute(stmt)
+            await session.commit()
+
+    async def get_current_game_points(self, game_id: int) -> int:
+        stmt = select(GameScoreModel).where(GameScoreModel.game_id == game_id)
+        async with self.app.database.session() as session:
+            result = await session.execute(stmt)
+            for scores_obj in result.scalars():
+                points = scores_obj.points
+                return points

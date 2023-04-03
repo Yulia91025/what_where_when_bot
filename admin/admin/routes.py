@@ -7,8 +7,9 @@ if typing.TYPE_CHECKING:
 
 
 def setup_routes(app: "Application"):
-    from admin.admin.views import AdminLoginView
+    from admin.admin.views import AdminLoginView, AdminAuthView
 
     app.router.add_view("/admin.add", AdminAddView)
+    app.router.add_view("/admin.auth", AdminAuthView)
     app.router.add_view("/admin.login", AdminLoginView)
     app.router.add_view("/admin.current", AdminCurrentView)

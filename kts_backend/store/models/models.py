@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
-from kts_backend.store.database.sqlalchemy_base import db
+from database.sqlalchemy_base import db
 
 from sqlalchemy import (
     Column,
@@ -13,6 +13,8 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
+from admin.quiz.models import Question, QuestionModel
+
 
 @dataclass
 class Game:
@@ -20,6 +22,7 @@ class Game:
     created_at: datetime
     chat_id: int
     players: list["Player"]
+    questions: list[Question] = None
 
 
 @dataclass
@@ -64,3 +67,18 @@ class GameScoreModel(db):
     )
     game = relationship("GameModel")
     player = relationship("PlayerModel")
+
+
+class GameQuestionModel(db):
+    __tablename__ = "game_questions"
+    id = Column(BigInteger, Identity(), primary_key=True)
+    game_id = Column(
+        BigInteger, ForeignKey("games.id", ondelete="CASCADE"), nullable=False
+    )
+    question_id = Column(
+        BigInteger,
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    game = relationship("GameModel")
+    question = relationship("QuestionModel")
