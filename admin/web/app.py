@@ -16,6 +16,7 @@ from admin.web.config import Config, setup_config
 from admin.web.logger import setup_logging
 from admin.web.middlewares import setup_middlewares
 from admin.web.routes import setup_routes
+from admin.web.templates import setup_templates
 
 
 class Application(AiohttpApplication):
@@ -58,6 +59,7 @@ def setup_app(config_path: str, database: Database) -> Application:
     setup_config(app, config_path)
     session_setup(app, EncryptedCookieStorage(app.config.session.key))
     setup_routes(app)
+    setup_templates(app)
     setup_aiohttp_apispec(
         app, title="Admin", url="/docs/json", swagger_path="/docs"
     )

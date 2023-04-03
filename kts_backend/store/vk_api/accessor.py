@@ -136,6 +136,9 @@ class VkApiAccessor(BaseAccessor):
         if message.user_id == message.peer_id:
             params["user_id"] = message.user_id
 
+        if message.attachment is not None:
+            params["attachment"] = message.attachment
+
         async with self.session.get(
             self._build_query(
                 API_PATH,

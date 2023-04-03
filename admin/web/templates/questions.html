@@ -1,0 +1,24 @@
+{% extends 'base_question.html' %}
+{% block title %}
+{{ title }}
+{% endblock %}
+{% block body %}
+<div>
+    <h1>{{ title }}</h1>
+    {% for question in questions %}
+        <div id="question">
+            <a href="/quiz.question/?id={{question.id}}">Вопрос номер {{ loop.index }}:</a>
+            {% if question.accepted == true %}
+            <p> Статус вопроса: Принят</p>
+            {% else %}
+            <p> Статус вопроса: Не проверен</p>
+            {% endif %}
+            <p>{{question.title}}</p>
+            <p>Ответ(ы):</p>
+            {% for answer in question.answers %}
+                <p>{{answer.title}}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 import time
+import random
 import asyncio
 from asyncio import Task
 from typing import Optional
@@ -26,7 +27,9 @@ class Timer:
         await self.task.cancel()
 
     async def t1(self, update):
-        await asyncio.sleep(60)
+        while self.is_running:
+            await asyncio.sleep(60)
+            self.is_running = False
         if self.gamestate.current_state == self.gamestate.choose_resp:
             self.is_running = False
         if self.gamestate.current_state == self.gamestate.timer:
@@ -37,7 +40,9 @@ class Timer:
             )
 
     async def t2(self, update):
-        await asyncio.sleep(120)
+        while self.is_running:
+            await asyncio.sleep(120)
+            self.is_running = False
         if (
             self.gamestate.current_state == self.gamestate.question
             or self.gamestate.current_state == self.gamestate.final
@@ -107,7 +112,14 @@ class Timer:
             string += Enter + "Так же засчитывались ответы: "
             for i in range(1, len(correct_answers_titles)):
                 string += Enter + correct_answers_titles[i].capitalize()
-        await self.gamestate.new_message(update, string, None, keyboard)
+
+        indx_attachment = random.randint(
+            0, len(self.gamestate.player_lost_attachments) - 1
+        )
+        attachment = self.gamestate.player_lost_attachments[indx_attachment]
+        await self.gamestate.new_message(
+            update, string, None, keyboard, attachment
+        )
 
         self.gamestate.round_num += 1
 
