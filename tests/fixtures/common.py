@@ -8,7 +8,7 @@ from aiohttp.test_utils import TestClient, loop_context
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from kts_backend.store.database.database import Database
+from database.database import Database
 from kts_backend.store import Store
 from kts_backend.web.app import setup_app
 from kts_backend.web.config import Config
@@ -26,14 +26,14 @@ def server():
         config_path=os.path.join(
             os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
             "config.yml",
-        )
+        ),
+        database=Database(),
     )
     app.on_startup.clear()
     app.on_shutdown.clear()
     app.store.vk_api = AsyncMock()
     app.store.vk_api.send_message = AsyncMock()
 
-    app.database = Database(app)
     app.on_startup.append(app.database.connect)
     app.on_shutdown.append(app.database.disconnect)
 
