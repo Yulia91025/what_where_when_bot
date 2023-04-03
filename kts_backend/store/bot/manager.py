@@ -131,6 +131,8 @@ class GameState:
             for ans in correct_answers_titles:
                 ans_beauty = ans.lower()
                 ans_beauty = ans_beauty.replace(".", "")
+                ans_beauty = ans_beauty.lstrip()
+                ans_beauty = ans_beauty.rstrip()
                 if ans_beauty in update.object.text.lower():
                     is_correct = True
                     break
