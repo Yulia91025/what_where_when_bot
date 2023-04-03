@@ -4,6 +4,8 @@ from typing import Optional
 
 from kts_backend.store import Store
 
+from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject
+
 
 class Sendler:
     def __init__(self, store: Store):

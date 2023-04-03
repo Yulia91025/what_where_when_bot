@@ -41,6 +41,7 @@ class VkApiAccessor(BaseAccessor):
         self.sendler = Sendler(app.store)
         self.logger.info("start sending")
         await self.sendler.start()
+        print("_______________________________________________")
 
     async def disconnect(self, app: "Application"):
         if self.poller:
@@ -94,39 +95,50 @@ class VkApiAccessor(BaseAccessor):
             raw_updates = data.get("updates", [])
             if len(raw_updates) != 0:
                 self.ts = int(data["ts"])
-            for update in raw_updates:
+                for update in raw_updates:
+                    await self.app.store.updates_queue.put(
+                        Update(
+                            type=update["type"],
+                            object=UpdateObject(
+                                id=update["object"]["message"]["id"],
+                                user_id=update["object"]["message"]["from_id"],
+                                peer_id=update["object"]["message"]["peer_id"],
+                                text=update["object"]["message"]["text"],
+                                body=update["object"],
+                            ),
+                        )
+                    )
+            else:
                 await self.app.store.updates_queue.put(
                     Update(
-                        type=update["type"],
+                        type="Nothing",
                         object=UpdateObject(
-                            id=update["object"]["message"]["id"],
-                            user_id=update["object"]["message"]["from_id"],
-                            peer_id=update["object"]["message"]["peer_id"],
-                            text=update["object"]["message"]["text"],
-                            body=update["object"],
+                            id=None,
+                            user_id=None,
+                            peer_id=None,
+                            text=None,
+                            body=None,
                         ),
                     )
                 )
 
     async def send_message(self, message: Message) -> None:
-        keyboard = {
-            "inline": True,
-            "one_time": False,
-            "buttons": [
-                [
-                    {"action": {"type": "text", "label": "Привет"}},
-                    {"action": {"type": "text", "label": "Пока"}},
-                ]
-            ],
-        }
         params = {
-            "user_id": message.user_id,
             "random_id": random.randint(1, 2**32),
-            "peer_id": "-" + str(self.app.config.bot.group_id),
+            "peer_id": message.peer_id,
             "message": message.text,
             "access_token": self.app.config.bot.token,
-            "keyboard": json.dumps(keyboard),
         }
+
+        if message.keyboard is not None:
+            params["keyboard"] = json.dumps(message.keyboard)
+
+        if message.user_id == message.peer_id:
+            params["user_id"] = message.user_id
+
+        if message.attachment is not None:
+            params["attachment"] = message.attachment
+
         async with self.session.get(
             self._build_query(
                 API_PATH,
@@ -138,7 +150,6 @@ class VkApiAccessor(BaseAccessor):
             info = dict()
             try:
                 info["response"] = data["response"]
-                info["user_id"] = params["user_id"]
                 info["peer_id"] = params["peer_id"]
                 info["message"] = params["message"]
                 self.logger.info(info)
