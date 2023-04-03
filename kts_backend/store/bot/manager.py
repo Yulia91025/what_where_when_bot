@@ -352,8 +352,8 @@ class BotManager:
                         attachment="doc151911296_516026762",
                     )
                 )
-        else:
-            await self.app.store.messages_queue.put(0)
+        # else:
+        #     await self.app.store.messages_queue.put(0)
 
     def get_game_state(self, chat_id) -> GameState:
         for game_state in self.current_game_states:

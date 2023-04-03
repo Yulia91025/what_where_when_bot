@@ -7,13 +7,18 @@ from admin.web.app import View
 from admin.web.utils import json_response
 from admin.web.mixins import AuthRequiredMixin
 
+from aiohttp_jinja2 import template
+
 
 class AdminAddView(View):
     @docs(tags=["admin"], summary="Add new administrator")
     @request_schema(AdminSchema)
     @response_schema(AdminSchema, 200)
     async def post(self):
-        data = self.request["data"]
+        try:
+            data = self.request["data"]
+        except KeyError:
+            data = await self.request.text()
         admin = await self.request.app.store.admins.create_admin(
             data["email"], data["password"]
         )
@@ -27,12 +32,15 @@ class AdminAddView(View):
         return json_response(data=AdminSchema().dump(admin))
 
 
-class AdminLoginView(View):
-    @docs(tags=["admin"], summary="Administrator authorization")
+class AdminAuthView(View):
+    @docs(tags=["admin"], summary="Administrator authentication")
     @request_schema(AdminSchema)
     @response_schema(AdminSchema, 200)
     async def post(self):
-        data = self.request["data"]
+        try:
+            data = self.request["data"]
+        except KeyError:
+            data = await self.request.text()
         admin = await self.request.app.store.admins.get_by_email(data["email"])
         if admin is None:
             raise HTTPForbidden
@@ -44,13 +52,24 @@ class AdminLoginView(View):
         return json_response(data=AdminSchema().dump(admin))
 
 
+@template("admin_login.html")
+class AdminLoginView(View):
+    @docs(tags=["admin"], summary="Administrator login")
+    async def get(self):
+        return {"title": "Войти или зарегистрироваться"}
+
+
+@template("admin.html")
 class AdminCurrentView(AuthRequiredMixin, View):
     @docs(tags=["admin"], summary="Current Administrator")
-    @response_schema(AdminSchema, 200)
     async def get(self):
         admin_info = self.request.admin
         email = admin_info.email
         admin = await self.request.app.store.admins.get_by_email(email)
         if admin is None:
-            raise HTTPNotFound
-        return json_response(data=AdminSchema().dump(admin))
+            return {"title": "Вы не авторизировались!"}
+        return {
+            "title": "Страница администратора",
+            "email": admin.email,
+            "id": admin.id,
+        }

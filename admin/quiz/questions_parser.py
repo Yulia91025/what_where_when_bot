@@ -71,6 +71,7 @@ class QuestionParser:
                             or "qr-код" in question.lower()
                             or "внимание" in question.lower()
                             or "ведущему" in question.lower()
+                            or "редакторы" in question.lower()
                         ):
                             questions.append(question)
                             answers.append(answers_str[i].rsplit(": ")[1])

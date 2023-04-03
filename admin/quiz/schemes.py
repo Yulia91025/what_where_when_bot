@@ -25,3 +25,8 @@ class QuestionEditSchema(Schema):
     id = fields.Int(required=True)
     title = fields.Str(required=False)
     answers = fields.Nested("AnswerSchema", many=True, required=False)
+
+
+class QuestionFindSchema(Schema):
+    id = fields.Int(required=False)
+    title = fields.Str(required=False)
