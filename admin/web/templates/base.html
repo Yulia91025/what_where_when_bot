@@ -32,6 +32,7 @@
             top: 0;
             left: 0;
             width: 100%;
+            
         }
 
 
@@ -74,8 +75,6 @@
             list-style: none;            
             display: column;
             margin-top: 1px;
-            /* margin-left: 10%; */
-            /* margin-right: -20%; */
             float: right;
             margin-bottom: 0px;
         }
@@ -103,6 +102,18 @@
             color: #04111a;
             padding: 7px;
         }
+
+        .form__input{
+            background-color: rgba(255, 255, 255, 0.726);
+        }
+
+        .accepted{
+            color:rgb(0, 219, 11);
+        }
+
+        .unverified{
+            color:rgb(236, 44, 44);
+        }
         
     </style>
 </head>
@@ -110,12 +121,12 @@
     <nav>
     <ul class = "menu">
         <div> <h2>ВОПРОСЫ БОТА "ЧТО? ГДЕ? КОГДА?"</h2> </div>
-            <li><a href = "/quiz.new_question">Добавить вопрос</a></li>
+            <li><a href = "/quiz.new_question" target="_blank">Добавить вопрос</a></li>
             <li><a href = "/quiz.list_questions">Список всех вопросов</a></li>
             <li><a href = "/quiz.list_unverified_questions">Напроверенные вопросы</a></li>
             <li><a href = "/quiz.list_accepted_questions">Принятые вопросы</a></li>
             <li><a href = "/quiz.parse_questions">Загрузить вопросы</a></li>
-            <li><a href = "/quiz.find_question">Найти вопрос</a></li>
+            <li><a href = "/quiz.find_question" target="_blank">Найти вопрос</a></li>
     </ul> 
     <ul1>
         <li><a>Войти или зарегистрироваться </a></li>

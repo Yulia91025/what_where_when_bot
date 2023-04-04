@@ -22,10 +22,6 @@ class GameState:
         self.captain_id = captain_id
         self.bot = bot
 
-        from kts_backend.store.bot.timer import Timer
-
-        self.t = Timer(self)
-
         self.points = 0
         self.round_num = 0
         self.round_resp = dict()
@@ -81,10 +77,13 @@ class GameState:
             )
             string = "Количество очков знатоков : " + str(points) + Enter
             string += "Количество очков телезрителей : " + str(
-                len(self.round_resp) - points
+                self.round_num - points
             )
             await self.new_message(update, string, "Следующий вопрос")
-        else:
+        elif (
+            "Начнём игру!" in update.object.text
+            or "Следующий вопрос" in update.object.text
+        ):
             question = self.current_question
             string = "Раунд " + str(self.round_num + 1) + Enter + Enter
             string += (
@@ -274,10 +273,13 @@ class GameState:
             )
         )
 
+        from kts_backend.store.bot.timer import Timer
         if "На размышление даётся 1 минута" in text:
+            self.t = Timer(self, self.round_num)
             await self.t.start(update, 1)
 
         if "укажите на отвечающего (через @)" in text:
+            self.t = Timer(self, self.round_num)
             await self.t.start(update, 2)
 
 

@@ -154,7 +154,7 @@ class QuizAccessor(BaseAccessor):
                 await session.commit()
 
     async def edit_question(
-        self, id: int, title: str = None, answers: list[Answer] = None
+        self, id: int, title: str = None, answers: list[Answer] = None, delete_answers : bool = False
     ):
         if title is not None and title:
             stmt = (
@@ -166,7 +166,10 @@ class QuizAccessor(BaseAccessor):
                 await session.execute(stmt)
                 await session.commit()
         if answers is not None and answers[0].title:
-            await self.edit_answers(id, answers)
+            if delete_answers:
+                await self.edit_answers(id, answers)
+            else:
+                await self.create_answers(id, answers)
 
     async def edit_answers(self, question_id: int, new_answers=list[Answer]):
         stmt = delete(AnswerModel).where(AnswerModel.question_id == question_id)

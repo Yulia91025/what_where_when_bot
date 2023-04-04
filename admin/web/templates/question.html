@@ -9,9 +9,9 @@
         {% if title != "Вопрос не найден!" %}
             <div id="question">
                 {% if question.accepted == true %}
-                <p> Статус вопроса: Принят</p>
+                <p class="accepted"> Статус вопроса: Принят</p>
                 {% else %}
-                <p> Статус вопроса: Не проверен</p>
+                <p class="unverified"> Статус вопроса: Не проверен</p>
                 {% endif %}
 
                 <p>{{question.title}}</p>

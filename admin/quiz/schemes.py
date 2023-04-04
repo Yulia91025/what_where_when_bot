@@ -25,6 +25,7 @@ class QuestionEditSchema(Schema):
     id = fields.Int(required=True)
     title = fields.Str(required=False)
     answers = fields.Nested("AnswerSchema", many=True, required=False)
+    delete_answers = fields.Boolean(required=True)
 
 
 class QuestionFindSchema(Schema):

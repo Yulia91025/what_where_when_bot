@@ -147,7 +147,7 @@ class QuestionAcceptanceView(AuthRequiredMixin, View):
 
 
 class QuestionEditView(AuthRequiredMixin, View):
-    @docs(tags=["quiz"], summary="Edit answers")
+    @docs(tags=["quiz"], summary="Edit questions")
     @request_schema(QuestionEditSchema)
     @response_schema(QuestionSchema, 200)
     async def post(self):
@@ -171,8 +171,8 @@ class QuestionEditView(AuthRequiredMixin, View):
                 answers = None
         except KeyError:
             answers = None
-
-        await self.request.app.store.quizzes.edit_question(id, title, answers)
+        delete_answs = data["delete_answers"]
+        await self.request.app.store.quizzes.edit_question(id, title, answers, delete_answs)
         question = await self.request.app.store.quizzes.get_question_by_id(id)
         return json_response(data=QuestionSchema().dump(question))
 

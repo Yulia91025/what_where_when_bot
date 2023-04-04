@@ -8,15 +8,14 @@ from kts_backend.store.bot.manager import GameState
 
 
 class Timer:
-    def __init__(self, gamestate: GameState):
+    def __init__(self, gamestate: GameState, round_num: int):
         self.gamestate = gamestate
         self.is_running = False
-        self.time = None
+        self.round = round_num
         self.task: Optional[Task] = None
 
     async def start(self, update, t1_or_t2):
         self.is_running = True
-        self.time = time.time()
         if t1_or_t2 == 1:
             self.task = asyncio.create_task(self.t1(update))
         elif t1_or_t2 == 2:
@@ -27,12 +26,12 @@ class Timer:
         await self.task.cancel()
 
     async def t1(self, update):
-        while self.is_running:
-            await asyncio.sleep(60)
-            self.is_running = False
-        if self.gamestate.current_state == self.gamestate.choose_resp:
-            self.is_running = False
-        if self.gamestate.current_state == self.gamestate.timer:
+        self.is_running = await self.t(60)
+        if (
+            self.gamestate.current_state == self.gamestate.timer
+            and not self.is_running
+            and self.round == self.gamestate.round_num
+        ):
             self.gamestate.current_state = self.gamestate.choose_resp
             await self.gamestate.new_message(
                 update,
@@ -40,19 +39,16 @@ class Timer:
             )
 
     async def t2(self, update):
-        while self.is_running:
-            await asyncio.sleep(120)
-            self.is_running = False
-        if (
-            self.gamestate.current_state == self.gamestate.question
-            or self.gamestate.current_state == self.gamestate.final
-        ):
-            self.is_running = False
+        self.is_running = await self.t(120)
         if (
             self.gamestate.current_state == self.gamestate.choose_resp
             or self.gamestate.current_state == self.gamestate.response
-        ):
+        ) and not self.is_running and self.round == self.gamestate.round_num:
             await self.checking(update)
+
+    async def t(self, sec: int):
+        await asyncio.sleep(sec)
+        return False
 
     async def checking(self, update):
         Enter = "%0A"

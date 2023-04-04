@@ -9,9 +9,9 @@
         <div id="question">
             <a href="/quiz.question/?id={{question.id}}">Вопрос номер {{ loop.index }}:</a>
             {% if question.accepted == true %}
-            <p> Статус вопроса: Принят</p>
+            <p class="accepted"> Статус вопроса: Принят</p>
             {% else %}
-            <p> Статус вопроса: Не проверен</p>
+            <p class="unverified"> Статус вопроса: Не проверен</p>
             {% endif %}
             <p>{{question.title}}</p>
             <p>Ответ(ы):</p>
