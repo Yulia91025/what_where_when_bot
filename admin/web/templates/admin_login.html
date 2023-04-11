@@ -42,7 +42,10 @@
             xhr.onload = () => {
                 status = xhr.status;
                 if (status == '200') alert("Вы успешно авторизировались");
-                else alert("Произошла ошибка");
+                else {
+                    if (status == '403') alert("Неверный email или пароль!");
+                    else alert("Произошла ошибка");
+                }
             };
             xhr.send(JSON.stringify(data));   
         }  

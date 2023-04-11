@@ -21,10 +21,10 @@
                 {% endfor %}
             </div>
             <form method="post" action="/quiz.edit_question/?id=" name="myForm" >
-            <input class="button" value="Редактировать вопрос" type="button" onclick="gotourl()"/>
+            <input class="button" value="Редактировать" type="button" onclick="gotourl()"/>
             </form>
-            <input class="button" value="Принять вопрос" type="button" onclick="submitform(true)"/>
-            <input class="button" value="Удалить вопрос" type="button" onclick="submitform(false)"/>
+            <input class="button" value="Принять" type="button" onclick="submitform(true)"/>
+            <input class="button" value="Удалить" type="button" onclick="submitform(false)"/>
         {% endif %}
     </div>
 </body>
@@ -56,7 +56,7 @@
                 else alert("Вопрос удалён");
             };
         };    
-        xhr.send(JSON.stringify(data));     
+        xhr.send(JSON.stringify(data));    
     }
 </script>
 {% endblock %}

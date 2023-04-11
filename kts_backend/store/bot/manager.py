@@ -240,9 +240,14 @@ class GameState:
                 + str(bot_points)
                 + Enter
                 + Enter
-                + "Спасибо за игру!"
             )
-            await self.new_message(update, string)
+            if players_points > bot_points:
+                attachment = "photo-218813853_457239227"
+                string += "Поздравляю! Победа знатоков! :)"
+            else:
+                attachment = "photo-218813853_457239228"
+                string += "Победила команда телезрителей :("
+            await self.new_message(update, string, attachment=attachment)
             raise Exception
 
     async def new_message(

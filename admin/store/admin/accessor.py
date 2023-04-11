@@ -32,6 +32,15 @@ class AdminAccessor(BaseAccessor):
         admin = Admin(admin_obj.id, admin_obj.email, admin_obj.password)
         return admin
 
+    async def check_admin(self, email: str, password: str) -> Admin | None:
+        admin = await self.get_by_email(email)
+        psswrd = sha256(password.encode("utf-8")).hexdigest()
+        if admin is None:
+            return None
+        if psswrd != admin.password: 
+            return None
+        return admin
+
     async def create_admin(self, email: str, password: str) -> Admin | None:
         psswrd = sha256(password.encode("utf-8")).hexdigest()
         stmt = insert(AdminModel).values(email=email, password=psswrd)
