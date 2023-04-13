@@ -121,6 +121,7 @@ class GameState:
     async def _create_response(self, update):
         if int(update.object.user_id) == int(self.round_resp[self.round_num]):
 
+            comments = self.current_question.comments
             correct_answers = self.current_question.answers
             correct_answers_titles = []
             for corr_ans in correct_answers:
@@ -183,10 +184,18 @@ class GameState:
                     0, len(self.player_win_attachments) - 1
                 )
                 attachment = self.player_win_attachments[indx_attachment]
+                string = "Верно! У вас плюс 1 очко!"
+                if comments is not None:
+                    string += (
+                        Enter
+                        + Enter
+                        + "Комментарий к ответу: "
+                        + comments.capitalize()
+                    )
                 await self.bot.app.store.game.inc_game_points(self.game.id)
                 await self.new_message(
                     update,
-                    "Верно! У вас плюс 1 очко",
+                    string,
                     None,
                     keyboard,
                     attachment,
@@ -207,6 +216,13 @@ class GameState:
                     string += Enter + "Так же засчитывались ответы: "
                     for i in range(1, len(correct_answers_titles)):
                         string += Enter + correct_answers_titles[i].capitalize()
+                if comments is not None:
+                    string += (
+                        Enter
+                        + Enter
+                        + "Комментарий к ответу: "
+                        + comments.capitalize()
+                    )
                 await self.new_message(
                     update, string, None, keyboard, attachment
                 )
@@ -279,6 +295,7 @@ class GameState:
         )
 
         from kts_backend.store.bot.timer import Timer
+
         if "На размышление даётся 1 минута" in text:
             self.t = Timer(self, self.round_num)
             await self.t.start(update, 1)

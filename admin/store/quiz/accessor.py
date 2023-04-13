@@ -27,7 +27,11 @@ class QuizAccessor(BaseAccessor):
         return answers
 
     async def create_question(
-        self, title: str, answers: list[Answer], accepted: bool = False
+        self,
+        title: str,
+        answers: list[Answer],
+        accepted: bool = False,
+        comments: str = None,
     ) -> Question:
         if len(answers) == 0:
             raise HTTPBadRequest
@@ -35,7 +39,9 @@ class QuizAccessor(BaseAccessor):
             if ans.title is None:
                 raise HTTPBadRequest
         try:
-            stmt = insert(QuestionModel).values(title=title, accepted=accepted)
+            stmt = insert(QuestionModel).values(
+                title=title, accepted=accepted, comments=comments
+            )
         except Exception as e:
             raise IntegrityError("'title' is required field", title, e.orig)
         try:
@@ -68,6 +74,7 @@ class QuizAccessor(BaseAccessor):
                 question_obj.title,
                 answers,
                 question_obj.accepted,
+                question_obj.comments,
             )
             return question
 
@@ -90,6 +97,7 @@ class QuizAccessor(BaseAccessor):
                 question_obj.title,
                 answers,
                 question_obj.accepted,
+                question_obj.comments,
             )
             return question
 
@@ -154,7 +162,12 @@ class QuizAccessor(BaseAccessor):
                 await session.commit()
 
     async def edit_question(
-        self, id: int, title: str = None, answers: list[Answer] = None, delete_answers : bool = False
+        self,
+        id: int,
+        title: str = None,
+        answers: list[Answer] = None,
+        delete_answers: bool = False,
+        comments: str = None,
     ):
         if title is not None and title:
             stmt = (
@@ -170,6 +183,8 @@ class QuizAccessor(BaseAccessor):
                 await self.edit_answers(id, answers)
             else:
                 await self.create_answers(id, answers)
+        if comments is not None:
+            await self.add_comments(id, comments)
 
     async def edit_answers(self, question_id: int, new_answers=list[Answer]):
         stmt = delete(AnswerModel).where(AnswerModel.question_id == question_id)
@@ -177,3 +192,13 @@ class QuizAccessor(BaseAccessor):
             await session.execute(stmt)
             await session.commit()
         await self.create_answers(question_id, new_answers)
+
+    async def add_comments(self, question_id: int, comments: str):
+        stmt = (
+            update(QuestionModel)
+            .values(comments=comments)
+            .where(QuestionModel.id == question_id)
+        )
+        async with self.app.database.session() as session:
+            await session.execute(stmt)
+            await session.commit()

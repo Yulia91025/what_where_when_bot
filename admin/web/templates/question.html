@@ -19,12 +19,15 @@
                 {% for answer in question.answers %}
                     <p>{{answer.title}}</p>
                 {% endfor %}
+                {% if question.comments  %}
+                    <p>Комментарии к ответу: {{question.comments}}</p>
+                {% endif %}                
             </div>
             <form method="post" action="/quiz.edit_question/?id=" name="myForm" >
             <input class="button" value="Редактировать" type="button" onclick="gotourl()"/>
-            </form>
             <input class="button" value="Принять" type="button" onclick="submitform(true)"/>
             <input class="button" value="Удалить" type="button" onclick="submitform(false)"/>
+            </form>
         {% endif %}
     </div>
 </body>

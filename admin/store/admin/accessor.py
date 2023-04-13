@@ -37,7 +37,7 @@ class AdminAccessor(BaseAccessor):
         psswrd = sha256(password.encode("utf-8")).hexdigest()
         if admin is None:
             return None
-        if psswrd != admin.password: 
+        if psswrd != admin.password:
             return None
         return admin
 
