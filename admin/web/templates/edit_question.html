@@ -12,6 +12,9 @@
         {% for answer in question.answers %}
             <p>{{answer.title}}</p>
         {% endfor %}
+        {% if question.comments  %}
+            <p>Комментарии к ответу: {{question.comments}}</p>
+        {% endif %}
     </div>
     </div>
     <div id="question">
@@ -23,6 +26,8 @@
                 <label for="delete_old_answers">Удалить старые ответы (по умолчанию "Нет"):</label>
                 <input class="form__input" type="radio" name="delete_old_answers" style="width: 2%;" />Да
                 <input class="form__input" type="radio" name="delete_old_answers" style="width: 2%;" />Нет<br />
+                <label for="comments">Новый комментарий: </label>
+                <input class="form__input" type="text" name="comments" value = "{{question.comments}}"/><br />
                 <input class="form__button" value="Изменить вопрос" type="button" onclick="submitform()"/>
             </form>
         </div>
@@ -35,7 +40,7 @@
     function submitform(){
         var id = document.getElementById("id").innerHTML;
         let form = document.forms[0];
-        if (!form.title.value && !form.answers.value) alert("Вы забыли указать одно из полей!")
+        if (!form.title.value && !form.answers.value && !form.comments.value) alert("Вы забыли указать одно из полей!")
         else {
             const r = document.querySelectorAll('input[name="delete_old_answers"]');
             if(r[0].checked) delete_answs = true;
@@ -43,12 +48,13 @@
             var data = {
                 "id": id,
                 "title": form.title.value,
+                "comments": form.comments.value,
                 "answers": [
                     {
                         "title": form.answers.value
                     }
                 ],
-                "delete_answers": delete_answs
+                "delete_answers": delete_answs,
             };
             var xhr = new XMLHttpRequest();
             xhr.open(form.method, form.action, true);

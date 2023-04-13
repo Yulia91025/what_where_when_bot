@@ -41,9 +41,13 @@ class Timer:
     async def t2(self, update):
         self.is_running = await self.t(120)
         if (
-            self.gamestate.current_state == self.gamestate.choose_resp
-            or self.gamestate.current_state == self.gamestate.response
-        ) and not self.is_running and self.round == self.gamestate.round_num:
+            (
+                self.gamestate.current_state == self.gamestate.choose_resp
+                or self.gamestate.current_state == self.gamestate.response
+            )
+            and not self.is_running
+            and self.round == self.gamestate.round_num
+        ):
             await self.checking(update)
 
     async def t(self, sec: int):

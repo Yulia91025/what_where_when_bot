@@ -12,6 +12,8 @@
                 <input class="form__input" type="text" name="title" /><br />
                 <label for="answers">Ответ :</label>
                 <input class="form__input" type="text" name="answers" /><br />
+                <label for="comments">Комментарии к ответу :</label>
+                <input class="form__input" type="text" name="comments" /><br />                
                 <input class="form__button" value="Добавить вопрос" type="button" onclick="submitform()"/>
             </form>
         </div>
@@ -29,9 +31,10 @@
                 "title": form.title.value,
                 "answers": [
                     {
-                        "title": form.answers.value
+                        "title": form.answers.value,
                     }
-                ]
+                ],
+                "comments": form.comments.value
             };
             var xhr = new XMLHttpRequest();
             xhr.open(form.method, form.action, true);

@@ -42,6 +42,8 @@ class GameAccessor(BaseAccessor):
         new_game.players = players
         questions = await self.app.store.quiz.get_11_random_questions()
         new_game.questions = questions
+        for question in questions:
+            await self.add_game_question(new_game.id, question.id)
         return new_game
 
     async def create_player(

@@ -41,7 +41,9 @@ class AdminAuthView(View):
             data = self.request["data"]
         except KeyError:
             data = await self.request.text()
-        admin = await self.request.app.store.admins.check_admin(data["email"], data["password"])
+        admin = await self.request.app.store.admins.check_admin(
+            data["email"], data["password"]
+        )
         if admin is None:
             raise HTTPForbidden
         session = await new_session(request=self.request)

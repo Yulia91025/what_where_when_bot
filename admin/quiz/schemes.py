@@ -6,6 +6,7 @@ class QuestionSchema(Schema):
     title = fields.Str(required=True)
     answers = fields.Nested("AnswerSchema", many=True, required=True)
     accepted = fields.Boolean(required=False)
+    comments = fields.Str(required=False)
 
 
 class AnswerSchema(Schema):
@@ -26,6 +27,7 @@ class QuestionEditSchema(Schema):
     title = fields.Str(required=False)
     answers = fields.Nested("AnswerSchema", many=True, required=False)
     delete_answers = fields.Boolean(required=True)
+    comments = fields.Str(required=False)
 
 
 class QuestionFindSchema(Schema):

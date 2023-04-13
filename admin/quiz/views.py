@@ -47,6 +47,12 @@ class QuestionAddView(AuthRequiredMixin, View):
                 answers = text["answers"]
             except:
                 raise HTTPBadRequest
+        try:
+            comments = data["comments"]
+        except KeyError:
+            comments = text["comments"]
+        except KeyError:
+            comments = None
         question = await self.request.app.store.quizzes.get_question_by_title(
             title
         )
@@ -57,7 +63,7 @@ class QuestionAddView(AuthRequiredMixin, View):
         else:
             answers_class = answers
         question = await self.store.quizzes.create_question(
-            title, answers_class, True
+            title, answers_class, True, comments
         )
         return json_response(data=QuestionSchema().dump(question))
 
@@ -80,17 +86,24 @@ class QuestionParseView(AuthRequiredMixin, View):
     @response_schema(ListQuestionSchema, 200)
     async def get(self):
         parser = QuestionParser()
-        questions_str, answers_str = await parser.parse_main()
+        questions_str, answers_str, comments_str = await parser.parse_main()
         questions = []
         for i in range(len(questions_str)):
             answer = Answer(answers_str[i])
             try:
                 question = await self.request.app.store.quizzes.create_question(
-                    questions_str[i], [answer]
+                    questions_str[i], [answer], False, comments_str[i]
                 )
                 questions.append(question)
             except:
-                pass
+                question = (
+                    await self.request.app.store.quizzes.get_question_by_title(
+                        questions_str[i]
+                    )
+                )
+                await self.request.app.store.quizzes.add_comments(
+                    question.id, comments_str[i]
+                )
         raw_questions = [
             QuestionSchema().dump(question) for question in questions
         ]
@@ -172,7 +185,13 @@ class QuestionEditView(AuthRequiredMixin, View):
         except KeyError:
             answers = None
         delete_answs = data["delete_answers"]
-        await self.request.app.store.quizzes.edit_question(id, title, answers, delete_answs)
+        try:
+            comments = data["comments"]
+        except KeyError:
+            comments = None
+        await self.request.app.store.quizzes.edit_question(
+            id, title, answers, delete_answs, comments
+        )
         question = await self.request.app.store.quizzes.get_question_by_id(id)
         return json_response(data=QuestionSchema().dump(question))
 

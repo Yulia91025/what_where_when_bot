@@ -11,6 +11,7 @@ class Question:
     title: str
     answers: list["Answer"]
     accepted: bool = False
+    comments: str = None
 
 
 @dataclass
@@ -26,6 +27,7 @@ class QuestionModel(db):
         "AnswerModel", back_populates="question", passive_deletes=True
     )
     accepted = Column(Boolean)
+    comments = Column(String)
 
 
 class AnswerModel(db):
