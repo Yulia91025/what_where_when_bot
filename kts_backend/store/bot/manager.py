@@ -185,7 +185,7 @@ class GameState:
                 )
                 attachment = self.player_win_attachments[indx_attachment]
                 string = "Верно! У вас плюс 1 очко!"
-                if comments is not None:
+                if comments is not None and not comments.isspace():
                     string += (
                         Enter
                         + Enter
@@ -216,7 +216,7 @@ class GameState:
                     string += Enter + "Так же засчитывались ответы: "
                     for i in range(1, len(correct_answers_titles)):
                         string += Enter + correct_answers_titles[i].capitalize()
-                if comments is not None:
+                if comments is not None and not comments.isspace():
                     string += (
                         Enter
                         + Enter
